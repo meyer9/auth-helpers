@@ -17,7 +17,7 @@ export function createChunks(key: string, value: string, chunkSize?: number): Ch
 		return [{ name: key, value }];
 	}
 
-	const chunks: string[] = [];
+	const chunkedValue: string[] = [];
 
 	while (encodedValue.length > 0) {
 		let encodedChunkHead = encodedValue.slice(0, resolvedChunkSize);
@@ -54,11 +54,16 @@ export function createChunks(key: string, value: string, chunkSize?: number): Ch
 			}
 		}
 
-		chunks.push(valueHead);
+		chunkedValue.push(valueHead);
 		encodedValue = encodedValue.slice(encodedChunkHead.length);
 	}
 
-	return chunks.map((value, i) => ({ name: `${key}.${i}`, value }));
+	const chunks = chunkedValue.map((value, i) => ({ name: `${key}.${i}`, value }));
+
+	// write one more empty chunk to ensure no collisions with previous chunks written (if chunk length is shorter than before)
+	chunks.push({ name: `${key}.${chunks.length}`, value: '' });
+
+	return chunks;
 }
 
 // Get fully constructed chunks

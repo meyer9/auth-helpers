@@ -31,6 +31,9 @@ export function createChunks(key: string, value: string, chunkSize?: number): Ch
 		chunks.push({ name, value });
 	});
 
+	// create one more empty chunk to ensure no collisions with previous chunks written (if chunk length is shorter than before)
+	chunks.push({ name: `${key}.${chunkCount}`, value: '' });
+
 	return chunks;
 }
 
